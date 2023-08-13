@@ -1,0 +1,168 @@
+{
+  "main": {
+    "id": "8589b5825f111b09",
+    "type": "split",
+    "children": [
+      {
+        "id": "211d31cca8ec109f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8381eab99cd6516d",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "未命名.canvas",
+                "viewState": {
+                  "x": 0,
+                  "y": 0,
+                  "zoom": 0
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "397a1109607d5fe3",
+    "type": "split",
+    "children": [
+      {
+        "id": "4a694fd7b20abafb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7a63a81d45708d39",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "5d92778d4fe2a0a9",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "d89c47eed98e2197",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "801edd3f8bac6d21",
+    "type": "split",
+    "children": [
+      {
+        "id": "cb124045b218c60c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b45bbb8dd505c28a",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "未命名.canvas",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "903d42f1d57bd4b7",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "未命名.canvas",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "f9cec71958853082",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "未命名.canvas"
+              }
+            }
+          },
+          {
+            "id": "c653be31fcecf5a7",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          }
+        ],
+        "currentTab": 2
+      }
+    ],
+    "direction": "horizontal",
+    "width": 273
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "canvas:新建白板": false,
+      "obsidian42-brat:BRAT": false,
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false
+    }
+  },
+  "active": "8381eab99cd6516d",
+  "lastOpenFiles": [
+    "未命名.canvas",
+    "15445课程笔记.md",
+    "c++Primer.md",
+    "project/cmu15445.md",
+    "muduo.md",
+    "操作系统.md",
+    "隔离级别.md",
+    "project/tinykv笔记.md",
+    "leetcode/c++用法.md",
+    "leetcode/常用算法代码.md",
+    "2023-01-09.md",
+    "project/mit6.824.md"
+  ]
+}

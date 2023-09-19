@@ -58,7 +58,14 @@ Raft 有2个定时器，定期执行以下两个线程
 
 配置变更：TODO
 
-配置变更可能导致整个集群不可用，需要**Pre-Vote**（pre-vote请求的时候不会增加自己的任期），Pre-Vote可以解决配置变更干扰leader的问题，还可以解决网络分区时脑裂的问题和任期爆炸增长的问题。为了提高可用性，还有Learner的设计，新加入的节点状态是**Learner**，Learner加入集群不参与投票，直到追赶上领导者。
+配置变更可能导致整个集群不可用，需要**Pre-Vote**（pre-vote请求的时候不会增加自己的任期）
+
+一个节点同意Pre-Vote请求的条件是：
+
+* 参数中任期更大，或者任期相同但是日志索引更大
+* 至少一次选举超时时间内没有收到领导者心跳（系统不应该扰乱一个活跃的领导者）
+
+Pre-Vote可以解决配置变更干扰leader的问题，还可以解决网络分区时脑裂的问题和任期爆炸增长的问题。为了提高可用性，还有Learner的设计，新加入的节点状态是**Learner**，Learner加入集群不参与投票，直到追赶上领导者。
 
 **极端场景下**的活性问题：
 
@@ -68,7 +75,7 @@ Raft 有2个定时器，定期执行以下两个线程
 
 但是如果一个场景下123可以互相通讯，2和4可以互相通讯，4之前是leader，5宕机了。13想要发起选举，但是2知道leader是活着的，不会同意，所以导致整个集群无法选出新的leader，旧Leader的日志又无法覆盖全部节点。虽然5个节点3个是满足多数派条件，但整个集群依然不可用。所以Pre-Vote启到了反作用。
 
-需要增加leader**主动下台**的机制。如果leader没有收到超过半数节点的appendEntry响应就主动下台。这个是checkQuorum机制，Pre-Vote + CheckQuorum就可以解决Raft算法的活性问题了。
+需要增加leader**主动下台**的机制。如果leader没有收到超过半数节点的appendEntry响应就主动下台。etcd称这个是checkQuorum机制，Pre-Vote + CheckQuorum就可以解决Raft算法的活性问题了。
 
 Raft性能优化：pipeline流水线和batch批处理（一次处理多个client的请求）
 
@@ -76,7 +83,7 @@ Raft性能优化：pipeline流水线和batch批处理（一次处理多个client
 
 ## Lab3
 
-KvRaft，接受get或者put请求，请求包括clientID和requestID用来判断请求是否重复。然后调用rf.start，让raft同步请求，raft同步并commit成功后会发送到applyCh中，kvraft的协程之一会一直等待applyCh，收到请求后就根据日志对db进行更新并放到对应日志index的ch中，请求端则取出ch中的数据判断是否成功
+KvRaft，接受get或者put请求，请求包括clientID和requestID用来判断请求是否重复（里面有2个map，一个存储一个clientid对应的最小requestid，另一个对应index的notify）。然后调用rf.start，让raft同步请求，raft同步并commit成功后会发送到applyCh中，kvraft的协程之一会一直等待applyCh，收到请求后就根据日志对db进行更新并放到对应日志index的ch中，请求端则取出ch中的数据判断是否成功
 
 ## Lab4A
 

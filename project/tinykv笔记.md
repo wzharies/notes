@@ -65,6 +65,15 @@ type storeMeta struct {
 
 
 
+RaftLog，Raft 和 RawNode 的处理流程。
+
+- 上层会出发 RawNode 的 `tick()` 函数发，RawNode 触发 Raft 的 `tick()` 函数。
+- 上层会定时从 `RawNode` 获取 Ready，首先上层通过 `HasReady()` 进行判断，如果有新的 Ready，上层会调用 RawNode 的 `Ready()`方法进行获取，RawNode 从 Raft 中 获取信息生成相应的 Ready 返回给上层应用，Raft 的信息则是存储在 RaftLog 之中。上层应用处理完 Ready 后，会调用 RawNode 的 `Advance()` 方法进行推进，告诉 RawNode 之前的 Ready 已经被处理完成，然后你可以执行一些操作，比如修改 applied，stabled 等信息。
+- 上层应用可以直接调用 RawNode 提供的 `Propose(data []byte)` ，`Step(m pb.Message)` 等方法，RawNode 会将这些请求统一包装成 Message，通过 Raft 提供的 `Step(m pb.Message)` 输入信息。
+- 当HanleMsg收到cmd的时候，会生成一个proposal放入slice中，然后将command包装成message发送到raf
+
+
+
 PeerMsgHandler 主要就看如下两个方法。
 
 ### HandleMsg()
@@ -87,11 +96,23 @@ PeerMsgHandler 主要就看如下两个方法。
 4. Apply `ready.CommittedEntries` 中的 entry。
 5. 调用 `d.RaftGroup.Advance(ready)` 方法推进 RawNode。
 
+
+
+性能优化：
+
+* leader可以在向follower发送日志的同时将日志写入磁盘，如果需要先写入磁盘再发送日志，可能会导致需要等待2次磁盘读写，延迟会明显增加。如果多数派已经写入磁盘，即使自己还没写入，甚至都可以立即提交，也是安全的。
+
+* 批处理和流水线:
+
+批处理：一次收集多个请求，汇总为一批发送给follower。同时也需要限制最多发送消息的数量。写入磁盘的时候，也不需要每次都调用fsync。
+
+流水线：leader发送消息的时候，不需要等待消息结果返回就可以立刻更新nextIndex发送下一批消息。如果网络或者follower出现错误，那么leader可以重新调整nextIndex。原因还是因为出错是小概率事件。
+
 # Project3 MultiRaftKV
 
 ### Leader Transfer
 
-主要干两件事，一个是将日志同步给下一个Leader，然后给其发送TimeOut选举的请求。Leader Transfer不需要同步日志
+主要干两件事，一个是将日志同步给下一个Leader，然后给其发送TimeOut选举的请求。Leader Transfer**不需要同步日志**
 
 ### Add/Remove Node
 
@@ -105,9 +126,11 @@ PeerMsgHandler 主要就看如下两个方法。
 
 只剩两个节点，然后被移除的那个节点正好是 Leader。因为网络是 unreliable，Leader 广播给另一个 Node 的心跳正好被丢了，也就是另一个节点的 commit 并不会被推进，也就是对方节点并不会执行 remove node 操作。而这一切 Leader 并不知道，它自己调用 `d.destroyPeer()` 已经销毁了。此时另一个节点并没有移除 Leader，它会发起选举，但是永远赢不了，因为需要收到被移除 Leader 的投票。
 
+**（如果是单步变更，可以commit后再apply或者收到msg再apply都行。但joint consensus只能收到msg就立即变更）**
+
 ### Split
 
-
+与add/remove node类似。
 
 ## Scheduler
 
